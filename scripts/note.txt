@@ -1,0 +1,26 @@
+this project is made by very smarter and modern ways
+
+1. this is base project first
+2. Dynamic module generator command (shell script is written)
+    so need to just type ( ./scripts/generate-module.sh Post ) it will generate all required files and resource route for crud
+    and also create view file in module named folder.
+    agar koi change karo is file me to ( chmod +x ./scripts/generate-module.sh ) chalao fir create karo
+
+3. for making multiple models
+   ./scripts/make-models.sh Post Comment Category Tag
+
+4. for generationg backup and restoring backup
+    ./scripts/backup-db.sh
+    ./scripts/restore-db.sh
+
+5. Clearing Laravel cache and compiled files...
+   ./scripts/clear.sh
+
+6. Dynamic Model Dommy Data Seeder
+   ( to seed fake data you need not to make saperate factories and seeders to each model just use this command in one time )
+    this will seed the fake data for your passed model in command
+    command : php artisan db:seed
+              OR
+              php artisan migrate:fresh --seed
+
+

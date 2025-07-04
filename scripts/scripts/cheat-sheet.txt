@@ -1,0 +1,145 @@
+# Laravel API Quick Setup - Beginner Cheat Sheet
+
+## 🔐 Sanctum API Auth (Recommended)
+bash
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+
+
+**User Model:**
+
+use Laravel\Sanctum\HasApiTokens;
+class User extends Authenticatable {
+    use HasApiTokens;
+}
+
+
+**Login/Register:**
+
+// Create token
+$token = $user->createToken('api-token')->plainTextToken;
+
+// Protect routes
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+## 🔑 JWT Auth
+bash
+composer require tymon/jwt-auth
+php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+php artisan jwt:secret
+
+
+**User Model:**
+
+use Tymon\JWTAuth\Contracts\JWTSubject;
+class User extends Authenticatable implements JWTSubject {
+    public function getJWTIdentifier() { return $this->getKey(); }
+    public function getJWTCustomClaims() { return []; }
+}
+
+## 🛡️ Passport (OAuth2)
+bash
+composer require laravel/passport
+php artisan migrate
+php artisan passport:install
+
+
+**Setup:**
+
+// User model
+use Laravel\Passport\HasApiTokens;
+
+// AuthServiceProvider
+Passport::routes();
+
+## 🔍 Search (Scout)
+bash
+composer require laravel/scout teamtnt/laravel-scout-tntsearch-driver
+php artisan vendor:publish --provider="Laravel\Scout\ScoutServiceProvider"
+
+
+**.env:**
+
+SCOUT_DRIVER=tntsearch
+
+
+**Model:**
+
+use Laravel\Scout\Searchable;
+class Product extends Model {
+    use Searchable;
+}
+
+
+**Usage:**
+
+Product::search('iphone')->get();
+
+## 🛒 Cart Logic
+
+public function addToCart(Request $request)
+{
+    $cart = session()->get('cart', []);
+    $cart[$request->product_id] = ['quantity' => 1];
+    session()->put('cart', $cart);
+}
+
+## 📊 API Resource
+bash
+php artisan make:resource ProductResource
+
+
+**Usage:**
+
+return new ProductResource($product);
+return ProductResource::collection($products);
+
+## 🛠️ Dev Tools
+bash
+# Debugbar
+composer require barryvdh/laravel-debugbar --dev
+
+# IDE Helper (optional)
+composer require barryvdh/laravel-ide-helper --dev
+
+## 📋 Quick Commands
+bash
+# Complete setup
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+
+# Search
+composer require laravel/scout teamtnt/laravel-scout-tntsearch-driver
+
+# Resources
+php artisan make:resource ProductResource
+
+# Dev tools
+composer require barryvdh/laravel-debugbar --dev
+
+## 📁 File Structure
+
+├── app/Http/Resources/     # API Resources  
+├── app/Services/Auth/      # Auth services
+├── scripts/db_backup.sh    # Backup script
+└── snippets/               # Code snippets
+    ├── auth.php
+    ├── crud.php  
+    ├── cart.php
+    └── scout_search.php
+
+## 🚀 Sample Routes
+
+Route::prefix('v1')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('products', ProductController::class);
+        Route::get('/products/search/{query}', [ProductController::class, 'search']);
+        Route::post('/cart/add', [CartController::class, 'addToCart']);
+    });
+});
