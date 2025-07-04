@@ -1,4 +1,4 @@
-name: 🚀 Deploy to https://skillsphere.great-site.net
+name: 🚀 Deploy to http://skillsphere.great-site.net
 on:
   push:
     branches:
@@ -13,10 +13,10 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v3
 
-      - name: 📤 FTP Deploy to edu.codesutra.space
+      - name: 📤 FTP Deploy to skillsphere.great-site.net
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /
+          server-dir: /htdocs
