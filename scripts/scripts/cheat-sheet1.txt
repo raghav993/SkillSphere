@@ -1,0 +1,112 @@
+# Laravel Advanced Features - Quick Reference
+
+## 🚀 Features
+
+### 1. Dynamic Seeder
+bash
+php artisan migrate:fresh --seed
+
+- Go to seeder class → pass model name & record count
+
+### 2. Custom Commands
+bash
+php artisan app:greet-users
+php artisan app:send-email-remainder
+php artisan app:show-datetime
+php artisan make:command YourCommandName
+
+
+### 3. DTOs
+- Location: `app/DTOs/`
+- Files: UserDTO.php, PostDTO.php, BaseDTO.php
+
+### 4. Service Repository Pattern
+- Services: `app/Services/`
+- Repositories: `app/Repositories/`
+- Interfaces: `app/Repositories/Interfaces/`
+
+### 5. Module Generator
+bash
+chmod +x ./scripts/generate-module.sh
+./scripts/generate-module.sh ModuleName
+
+
+### 6. Database Scripts
+bash
+./scripts/backup-db.sh
+./scripts/restore-db.sh
+
+## 📋 Quick Commands
+
+bash
+# Setup
+php artisan key:generate
+php artisan migrate:fresh --seed
+
+# Module
+chmod +x ./scripts/generate-module.sh
+./scripts/generate-module.sh Post
+
+# Database
+./scripts/backup-db.sh
+./scripts/restore-db.sh
+
+# Custom Commands
+php artisan app:greet-users
+php artisan app:send-email-remainder
+php artisan app:show-datetime
+
+## 🔧 Workflow
+
+1. **Initial Setup:**
+   - Copy `.env.example` to `.env`
+   - `php artisan key:generate`
+   - `php artisan migrate:fresh --seed`
+
+2. **Create Module:**
+   - `chmod +x ./scripts/generate-module.sh`
+   - `./scripts/generate-module.sh ModuleName`
+   - `php artisan migrate:fresh --seed`
+
+3. **Backup & Restore:**
+   - `./scripts/backup-db.sh`
+   - Make changes
+   - `./scripts/restore-db.sh` (if needed)
+
+## 📁 Structure
+
+├── app/
+│   ├── Console/Commands/
+│   ├── DTOs/
+│   ├── Services/
+│   └── Repositories/Interfaces/
+├── database/seeders/
+└── scripts/
+    ├── generate-module.sh
+    ├── backup-db.sh
+    └── restore-db.sh
+
+
+## 🛠️ Fix Issues
+
+bash
+# Script permissions
+chmod +x ./scripts/generate-module.sh
+chmod +x ./scripts/backup-db.sh
+chmod +x ./scripts/restore-db.sh
+
+# After new models
+composer dump-autoload
+
+
+## 📝 Examples
+
+bash
+# Create Blog module
+./scripts/generate-module.sh Blog
+
+# Seed data
+php artisan migrate:fresh --seed
+
+# Use commands
+php artisan app:greet-users
