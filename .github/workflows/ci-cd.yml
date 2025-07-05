@@ -1,0 +1,68 @@
+name: 🚀 Laravel CI/CD with Pest, Slack & Email
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, xml, bcmath, sqlite, curl
+          coverage: none
+
+      - name: 📦 Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: 🧪 Run Pest Tests
+        run: ./vendor/bin/pest
+        continue-on-error: true
+
+      - name: 🔔 Notify Slack on Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "🚨 *CI/CD Failed* in `${{ github.repository }}` on `${{ github.ref_name }}`.\n🔗 <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}> View Logs"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: 📧 Email Notification on Failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USER }}
+          password: ${{ secrets.MAIL_PASS }}
+          subject: "[CI/CD] ❌ Build Failed - ${{ github.repository }}"
+          body: |
+            GitHub Actions CI/CD pipeline failed for:
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+
+            View logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: your@email.com
+          from: ci@codesutra.space
+
+      - name: ✅ FTP Deploy (Only If Tests Passed)
+        if: success()
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /htdocs/
